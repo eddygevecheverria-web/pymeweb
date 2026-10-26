@@ -1,0 +1,47 @@
+# ==========================================
+# GITIGNORE - PYMEWEB ERP CLOUD
+# ==========================================
+
+# 1. Dependencias Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 2. Build de Next.js
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# 3. Entornos y Credenciales Sensibles
+.env
+.env*.local
+*.local
+credenciales d.txt
+
+# 4. Archivos temporales y de pruebas
+scratch/
+tests/scratch/
+*.log
+
+# 5. Archivos de subida de usuarios (se preservan carpetas con .gitkeep)
+backend-api/uploads/**
+!backend-api/uploads/**/.gitkeep
+backend-api/storage/certificados/**
+!backend-api/storage/certificados/**/.gitkeep
+
+# 6. IDEs y Sistema Operativo
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini
