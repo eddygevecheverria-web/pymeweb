@@ -34,8 +34,12 @@ if (!empty($httpOrigin)) {
             }
         }
     } else {
-        // En desarrollo/staging: permitir localhost, 127.0.0.1 en cualquier puerto, o FRONTEND_URL
-        if (preg_match('/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i', $httpOrigin) || in_array($httpOrigin, $allowedOrigins, true)) {
+        // En desarrollo/staging: permitir localhost, 127.0.0.1 en cualquier puerto, dominios vercel.app, o FRONTEND_URL
+        if (
+            preg_match('/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i', $httpOrigin) ||
+            preg_match('/^https?:\/\/[a-z0-9-]+\.vercel\.app$/i', $httpOrigin) ||
+            in_array($httpOrigin, $allowedOrigins, true)
+        ) {
             $originToAllow = $httpOrigin;
         }
     }
