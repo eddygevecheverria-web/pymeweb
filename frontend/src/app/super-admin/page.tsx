@@ -37,6 +37,9 @@ import {
   Lock,
   RefreshCw,
   Phone,
+  Menu,
+  Store,
+  ChevronRight,
 } from "lucide-react";
 
 interface Metrics {
@@ -126,6 +129,7 @@ export default function SuperAdminDashboard() {
 
   // Navegación principal de pestañas
   const [tabActiva, setTabActiva] = useState<"inquilinos" | "suscripciones" | "configuracion">("inquilinos");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Estados Tab Inquilinos
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -646,97 +650,285 @@ export default function SuperAdminDashboard() {
     : solicitudes.filter((s) => s.estado === "pendiente").length;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      {/* HEADER PRINCIPAL */}
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 z-30 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
-            <ShieldCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-black text-lg leading-tight">PymeWeb ERP</h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                Super Admin
-              </span>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row">
+      {/* ========================================================================= */}
+      {/* MENÚ LATERAL IZQUIERDO (SIDEBAR PERMANENTE)                               */}
+      {/* ========================================================================= */}
+      <aside
+        className={`fixed md:sticky top-0 z-40 h-screen w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between transition-transform duration-200 ease-in-out shrink-0 ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        {/* Parte Superior del Sidebar */}
+        <div className="p-5 flex flex-col gap-6 overflow-y-auto">
+          {/* Logo & Marca Super Admin */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30 shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="font-extrabold text-base leading-tight tracking-tight text-slate-900 dark:text-white">
+                    PymeWeb
+                  </h1>
+                  <span className="px-1.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    Admin
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  Control Central SaaS
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Gestión Integral de Suscripciones, Transferencias e Inquilinos
-            </p>
+
+            {/* Botón cerrar en móvil */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              aria-label="Cerrar menú"
+            >
+              <XCircle className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Menú de Navegación Izquierdo */}
+          <nav className="space-y-1">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 pb-1 block">
+              Módulos de Gestión
+            </span>
+
+            {/* 1. Inquilinos / Negocios */}
+            <button
+              type="button"
+              onClick={() => {
+                setTabActiva("inquilinos");
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full text-left px-3.5 py-3 rounded-2xl font-bold text-xs flex items-center justify-between transition group ${
+                tabActiva === "inquilinos"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Users
+                  className={`w-4 h-4 ${
+                    tabActiva === "inquilinos"
+                      ? "text-white"
+                      : "text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                  }`}
+                />
+                <span>Inquilinos / Negocios</span>
+              </div>
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  tabActiva === "inquilinos"
+                    ? "bg-white/20 text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {tenants.length}
+              </span>
+            </button>
+
+            {/* 2. Suscripciones & Transferencias */}
+            <button
+              type="button"
+              onClick={() => {
+                setTabActiva("suscripciones");
+                loadSolicitudes();
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full text-left px-3.5 py-3 rounded-2xl font-bold text-xs flex items-center justify-between transition group ${
+                tabActiva === "suscripciones"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <CreditCard
+                  className={`w-4 h-4 ${
+                    tabActiva === "suscripciones"
+                      ? "text-white"
+                      : "text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                  }`}
+                />
+                <span>Suscripciones & Pagos</span>
+              </div>
+              {pendientesCount > 0 ? (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white animate-pulse">
+                  {pendientesCount}
+                </span>
+              ) : (
+                <span
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    tabActiva === "suscripciones"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                  }`}
+                >
+                  {solicitudes.length}
+                </span>
+              )}
+            </button>
+
+            {/* 3. Configuración SaaS */}
+            <button
+              type="button"
+              onClick={() => {
+                setTabActiva("configuracion");
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full text-left px-3.5 py-3 rounded-2xl font-bold text-xs flex items-center justify-between transition group ${
+                tabActiva === "configuracion"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Settings
+                  className={`w-4 h-4 ${
+                    tabActiva === "configuracion"
+                      ? "text-white"
+                      : "text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                  }`}
+                />
+                <span>Tarifas & Bancos SaaS</span>
+              </div>
+            </button>
+          </nav>
+
+          {/* Acciones Rápidas en el menú */}
+          <div className="pt-2 space-y-2 border-t border-slate-200/80 dark:border-slate-800">
+            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 pb-1 block">
+              Acciones Rápidas
+            </span>
+
+            <button
+              type="button"
+              onClick={() => {
+                openCreateModal();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 flex items-center gap-2 transition"
+            >
+              <Plus className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>+ Nuevo Inquilino ({saasConfig.dias_prueba || 7}d)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setManualModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3.5 py-2.5 rounded-xl font-bold text-xs bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 flex items-center gap-2 transition"
+            >
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>Registrar Transferencia</span>
+            </button>
+
+            <a
+              href="/"
+              target="_blank"
+              rel="noreferrer"
+              className="w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center justify-between transition"
+            >
+              <span className="flex items-center gap-2">
+                <Store className="w-4 h-4" />
+                <span>Página Publicitaria</span>
+              </span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* BOTÓN NUEVO CLIENTE */}
-          <button
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm"
-          >
-            <Plus className="w-4 h-4" /> Nuevo Inquilino ({saasConfig.dias_prueba || 7}d)
-          </button>
+        {/* Parte Inferior del Sidebar (Usuario & Salir) */}
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                A
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                  Super Admin
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                  admin@pymeweb.com
+                </p>
+              </div>
+            </div>
 
-          <ThemeToggle />
+            <ThemeToggle />
+          </div>
 
           <button
+            type="button"
             onClick={handleLogout}
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950 text-red-600 transition"
-            title="Cerrar sesión"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 border border-transparent hover:border-red-200 dark:hover:border-red-900 transition"
           >
             <LogOut className="w-4 h-4" />
+            <span>Cerrar Sesión</span>
           </button>
         </div>
-      </header>
+      </aside>
 
-      {/* SUB-HEADER CON PESTAÑAS PRINCIPALES */}
-      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-2">
-        <div className="max-w-7xl mx-auto flex items-center gap-2">
-          <button
-            onClick={() => setTabActiva("inquilinos")}
-            className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition ${
-              tabActiva === "inquilinos"
-                ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Users className="w-4 h-4" />
-            <span>1. Inquilinos / Negocios ({tenants.length})</span>
-          </button>
+      {/* Backdrop para móvil cuando el menú está abierto */}
+      {mobileMenuOpen && (
+        <div
+          onClick={() => setMobileMenuOpen(false)}
+          className="fixed inset-0 z-30 bg-black/50 md:hidden backdrop-blur-xs"
+        />
+      )}
 
-          <button
-            onClick={() => {
-              setTabActiva("suscripciones");
-              loadSolicitudes();
-            }}
-            className={`relative px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition ${
-              tabActiva === "suscripciones"
-                ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>2. Suscripciones & Transferencias</span>
-            {pendientesCount > 0 && (
-              <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white animate-pulse">
-                {pendientesCount}
-              </span>
-            )}
-          </button>
+      {/* ========================================================================= */}
+      {/* ÁREA DE CONTENIDO PRINCIPAL (DERECHA)                                     */}
+      {/* ========================================================================= */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        {/* TOPBAR SUPERIOR (Móvil & Encabezado de Sección) */}
+        <header className="sticky top-0 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            {/* Botón abrir menú en móvil */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+              aria-label="Abrir menú lateral"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-          <button
-            onClick={() => setTabActiva("configuracion")}
-            className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition ${
-              tabActiva === "configuracion"
-                ? "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>3. Configuración SaaS & Tarifas</span>
-          </button>
-        </div>
-      </div>
+            <div>
+              <h2 className="font-black text-base sm:text-lg text-slate-900 dark:text-white leading-tight">
+                {tabActiva === "inquilinos" && "Inquilinos & Negocios Registrados"}
+                {tabActiva === "suscripciones" && "Suscripciones & Transferencias Bancarias"}
+                {tabActiva === "configuracion" && "Configuración SaaS & Tarifas"}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+                {tabActiva === "inquilinos" && "Supervisión de cuentas, días restantes y credenciales de acceso."}
+                {tabActiva === "suscripciones" && "Aprobación de comprobantes de pago por transferencia y renovaciones."}
+                {tabActiva === "configuracion" && "Definición de precios de planes mensual/anual y cuentas bancarias oficiales."}
+              </p>
+            </div>
+          </div>
 
-      <main className="max-w-7xl mx-auto p-6 space-y-6">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Nuevo Inquilino</span>
+            </button>
+          </div>
+        </header>
+
+        {/* CONTENIDO PRINCIPAL */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
         {feedback && (
           <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex justify-between items-center text-xs font-semibold shadow-xs">
             <span className="flex items-center gap-2">
@@ -1469,6 +1661,7 @@ export default function SuperAdminDashboard() {
           </div>
         )}
       </main>
+      </div>
 
       {/* MODAL 1: CREAR / EDITAR CLIENTE */}
       {modalOpen && (
